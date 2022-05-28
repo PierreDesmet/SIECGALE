@@ -1,0 +1,143 @@
+/* Le style suivant est utilisé pour l'historique des commits */
+
+@font-face {
+    font-family: "Atlassian Icons";
+    src: url(http://aui-cdn.atlassian.com/aui-adg/5.9.6/css/fonts/atlassian-icons.eot);
+    src: url(http://aui-cdn.atlassian.com/aui-adg/5.9.6/css/fonts/atlassian-icons.eot?#iefix) format("embedded-opentype"), url(http://aui-cdn.atlassian.com/aui-adg/5.9.6/css/fonts/atlassian-icons.woff) format("woff"), url(http://aui-cdn.atlassian.com/aui-adg/5.9.6/css/fonts/atlassian-icons.ttf) format("truetype"), url(http://aui-cdn.atlassian.com/aui-adg/5.9.6/css/fonts/atlassian-icons.svg#atlassian-icons) format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+#bit-booster-tbl, #bit-booster-tbl *:not(.icon-box):not(.tooltipe):not(.tooltipe__cow) { line-height: 1.0; font-family: monospace; border-spacing: 0; margin:0; border: 0; padding: 0; font-size: 16px;}
+#bit-booster-tbl span.icon { font-family: "Atlassian Icons"; font-size: 16px; padding-left: 0.7em; }
+#bit-booster-tbl td.d { font-style: italic; color: darkgray; padding-left: 0.7em; white-space: nowrap; }
+#bit-booster-tbl td.commit { padding: 4px 1px; }
+
+
+/* Pour la TODO-list */
+
+.markdown-body .task-list-item {
+  list-style-type: none !important;
+}
+
+.markdown-body .task-list-item input[type="checkbox"] {
+  margin: 0 4px 0.25em -20px;
+  vertical-align: middle;
+}
+
+.markdown-body .task-list-control {
+  display: inline; /* Ensure label is inline incase theme sets it to block.*/
+}
+
+.markdown-body .task-list-control {
+  position: relative;
+  display: inline-block;
+  color: #555;
+  cursor: pointer;
+}
+
+.markdown-body .task-list-control input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  z-index: -1; /* Put the input behind the label so it doesn't overlay text */
+}
+
+.markdown-body .task-list-indicator {
+  position: absolute;
+  top: -8px;
+  left: -18px;
+  display: block;
+  width:  14px;
+  height: 14px;
+  color: #eee;
+  background-color: #eee;
+  border-radius: .25rem;
+}
+
+.markdown-body .task-list-control input[type="checkbox"]:checked + .task-list-indicator::before {
+  display: block;
+  margin-top: -4px;
+  margin-left: 2px;
+  font-size: 16px;
+  line-height: 1;
+  content: "✔";
+  color: #1EBB52;
+}
+
+
+
+/* Tout ce qui suit est pour la sexification du git-history */
+.icone {
+     height: 24px;
+     width: 24px;
+     position: relative;
+     cursor: pointer;
+     padding-left: 0.7em;
+ }
+
+ .icone div {
+     transition: 0.3s ease;
+ }
+
+ .icone:hover .tooltipe {
+     display: block;
+ }
+
+ .icone__cow:hover div {
+     fill: #BC6C62;
+ }
+
+ .tooltipe {
+     padding: 10px;
+     position: absolute;
+     width: auto;
+     white-space: nowrap;
+     word-wrap: no-wrap;
+     box-shadow: 1px 1px 20px #aaa;
+     border-radius: 5px;
+     background-color: #fff;
+     top: 40px;
+     left: 50%;
+     transform: translate(-50%);
+     transform-style: preserve-3d;
+     z-index: 200;
+     font-size: 0.9em;
+     display: none;
+ }
+
+ .tooltipe:after {
+     content: "";
+     position: absolute;
+     display: block;
+     width: 10px;
+     height: 10px;
+     transform-origin: 50% 50%;
+     transform: rotate(45deg) translateX(-50%);
+     background-color: #fff;
+     left: 50%;
+     top: -1px;
+     z-index: 400;
+ }
+
+ .tooltipe:before {
+     content: "";
+     display: block;
+     position: absolute;
+     width: 10px;
+     height: 10px;
+     transform-origin: 50% 50%;
+     transform: rotate(45deg) translateX(-50%) translateZ(-1px);
+     background-color: #fff;
+     left: 50%;
+     top: 0px;
+     z-index: -1;
+     box-shadow: -1px -1px 20px #aaa;
+ }
+
+ .tooltipe__cow {
+     color: #de9309;
+     font-style: normal;
+     box-shadow: 1px 1px 20px rgba(188, 108, 98, 0.3);
+     font-family: sans-serif;
+     border: 20px;
+     padding: 1.5em;
+ }

@@ -1,0 +1,19 @@
+# todo
+paths:
+    train: data/inputs/ner_dataset.csv
+    model: data/inputs/models/bert-base-uncased # from https://huggingface.co/bert-base-uncased/tree/main
+    model_saved: data/models/model_trained.bin
+
+seed: 7
+
+sample_sizes:
+    minitrain: 0.6
+    valid: 0.2
+    test: 0.2
+    
+model:
+    learning_rate: 0.00003
+    max_sentence_len: 128
+    train_batch_size: 32
+    valid_batch_size: 8
+    epochs: 10

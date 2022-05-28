@@ -1,0 +1,52 @@
+site_name: NER PyTorch
+site_author: Pierre Desmet
+site_description: Fine-tuning d'un modèle de reconnaissance d'entités nommées en PyTorch.
+repo_url:
+dev_addr: 127.0.0.1:8000
+
+theme:
+    name: mkdocs
+    locale: fr
+    palette:
+        primary: amber
+
+extra_css:
+ - stylesheets/extra.css
+
+nav:
+    - Accueil: index.md
+    - Docs: fonctions.md
+    - Suivi:
+        - Arborescence du projet: Suivi/tree.md
+        - Historique Git: Suivi/git-history.md
+        - Tests coverage: Suivi/reports
+        - TODO: Suivi/TODO.md
+
+markdown_extensions:
+    # https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/
+    # not working...
+    #- pymdownx.emoji:
+    #    emoji_generator: !!python/name:pymdownx.emoji.to_png
+    - toc:
+        toc_depth: 2
+        permalink: '#' # chaque header a un id
+    - pymdownx.arithmatex:
+        generic: true
+    - pymdownx.tasklist:
+        custom_checkbox: true
+        clickable_checkbox: true
+    - pymdownx.snippets # voir https://squidfunk.github.io/mkdocs-material/reference/abbreviations/#adding-a-glossary
+    - pymdownx.details  # voir https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/#details
+    - footnotes         # voir https://squidfunk.github.io/mkdocs-material/reference/footnotes/
+    - abbr              # voir https://squidfunk.github.io/mkdocs-material/reference/abbreviations/#configuration
+
+plugins:
+    - mkdocstrings:
+        # Pour que la doc reflète toute màj de docstring sans relancer mkdocs :
+        watch:
+            - ner_pytorch
+
+extra_javascript:
+  # - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
