@@ -17,7 +17,7 @@ def process_data(df: pd.DataFrame):
     # "Hi Abhishek, great tutorial as allways. One problem though; I was thinking that it might cause 
     # some issues that you extend the target_tag with 0's for the padding, since 0 is likely assigned 
     # as the encoded value for an actual tag. Am I mistaken in this?
-    df['Tag'] = enc_tag.fit_transform(df.Tag) + 1
+    df['Tag'] = enc_tag.fit_transform(df.Tag)  # + 1
 
     sentences = df.groupby('Sentence #')['Word'].apply(list).values
     tag = df.groupby("Sentence #")['Tag'].apply(list).values
