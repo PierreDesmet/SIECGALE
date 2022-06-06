@@ -11,6 +11,7 @@ class EntityDataset(torch.utils.data.Dataset):
     def __init__(self, texts, tags):
         self.texts = texts
         self.tags = tags
+        self.PADDING_VALUE = 0
 
     def __len__(self):
         return len(self.texts)
@@ -20,7 +21,7 @@ class EntityDataset(torch.utils.data.Dataset):
         tags = self.tags[item]
 
         ids = []
-        target_tag =[]
+        target_tag = []
 
         for i, s in enumerate(text):
             inputs = EntityDataset.tokenizer.encode(
@@ -35,17 +36,17 @@ class EntityDataset(torch.utils.data.Dataset):
         target_tag = target_tag[:PARAMS.MODEL.MAX_SENTENCE_LEN - 2]
 
         ids = [101] + ids + [102]
-        target_tag = [0] + target_tag + [0]
+        target_tag = [self.PADDING_VALUE] + target_tag + [self.PADDING_VALUE]
 
         mask = [1] * len(ids)
-        token_type_ids = [0] * len(ids)
+        token_type_ids = [self.PADDING_VALUE] * len(ids)
 
         padding_len = PARAMS.MODEL.MAX_SENTENCE_LEN - len(ids)
 
-        ids = ids + ([0] * padding_len)
-        mask = mask + ([0] * padding_len)
-        token_type_ids = token_type_ids + ([0] * padding_len)
-        target_tag = target_tag + ([0] * padding_len)
+        ids = ids + ([self.PADDING_VALUE] * padding_len)
+        mask = mask + ([self.PADDING_VALUE] * padding_len)
+        token_type_ids = token_type_ids + ([self.PADDING_VALUE] * padding_len)
+        target_tag = target_tag + ([self.PADDING_VALUE] * padding_len)
 
         return {
             "ids": torch.tensor(ids, dtype=torch.long),

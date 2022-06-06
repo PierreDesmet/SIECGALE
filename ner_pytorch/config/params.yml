@@ -24,4 +24,4 @@ model:
     max_sentence_len: 128
     train_batch_size: 32
     valid_batch_size: 32
-    epochs: 5
+    epochs: 4
