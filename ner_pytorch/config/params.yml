@@ -5,6 +5,7 @@ paths:
     model_saved: data/models/model_trained.bin
 
 seed: 7
+num_labels: 3
 
 sample_sizes:
     minitrain: 0.6
