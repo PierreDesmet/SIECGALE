@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from transformers import BertModel
+#from transformers import BertModel
+from pytorch_pretrained_bert import BertForTokenClassification
 
 from ner_pytorch.config.params import PARAMS
 
@@ -22,13 +23,15 @@ class EntityModel(nn.Module):
     def __init__(self, num_tag):
         super(EntityModel, self).__init__()
         self.num_tag = num_tag
-        self.bert = BertModel.from_pretrained(PARAMS.PATHS.MODEL, return_dict=False)
+        # self.bert = BertModel.from_pretrained(PARAMS.PATHS.MODEL, return_dict=False) 'bert-based-uncased'
+        self.bert = BertForTokenClassification.from_pretrained(PARAMS.PATHS.MODEL, num_labels=num_tag)
         self.dropout = nn.Dropout(0.3)
-        self.out_tag = nn.Linear(768, self.num_tag)
+        # self.out_tag = nn.Linear(768, self.num_tag)
     
-    def forward(self, ids, mask, token_type_ids, target_tag):
-        o1, _ = self.bert(ids, attention_mask=mask, token_type_ids=token_type_ids)
+    def forward(self, ids, mask, token_type_ids, target_tag):        
+        o1 = self.bert(ids, attention_mask=mask, token_type_ids=token_type_ids)
         bo_tag = self.dropout(o1)
-        tag = self.out_tag(bo_tag)
-        loss = loss_fn(tag, target_tag, mask, self.num_tag)
-        return tag, loss
+        # tag = self.out_tag(bo_tag)
+        # loss = loss_fn(tag, target_tag, mask, self.num_tag)
+        loss = loss_fn(bo_tag, target_tag, mask, self.num_tag)
+        return bo_tag, loss

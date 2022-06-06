@@ -12,13 +12,15 @@ sample_sizes:
     test: 0.2
 
 num_workers:
-    minitrain: 16
-    valid: 16
-    test: 16
+    minitrain: 32
+    valid: 32
+    test: 32
 
 model:
+    do_lower_case: True  # autrement, trop de tokens seraient inconnus
+    grad_max_norm: 1
     learning_rate: 0.00003
     max_sentence_len: 128
-    train_batch_size: 64
-    valid_batch_size: 64
+    train_batch_size: 32
+    valid_batch_size: 32
     epochs: 5

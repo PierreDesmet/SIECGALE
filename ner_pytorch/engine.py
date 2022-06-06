@@ -1,6 +1,7 @@
 import torch
 from tqdm import tqdm
 
+from ner_pytorch.config.params import PARAMS
 
 def train_fn(data_loader, model, optimizer, device, scheduler, 
              pbar=None, num_epoch=None):
@@ -16,6 +17,8 @@ def train_fn(data_loader, model, optimizer, device, scheduler,
         optimizer.zero_grad()
         _, loss = model(**batch)
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(parameters=model.parameters(),
+                                       max_norm=PARAMS.MODEL.GRAD_MAX_NORM)
         optimizer.step()
         scheduler.step()
         final_loss += loss.item()

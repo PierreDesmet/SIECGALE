@@ -6,7 +6,8 @@ from ner_pytorch.config.params import PARAMS
 
 
 class EntityDataset(torch.utils.data.Dataset):
-    tokenizer = BertTokenizer.from_pretrained(PARAMS.PATHS.MODEL, do_lower_case=True)
+    tokenizer = BertTokenizer.from_pretrained(PARAMS.PATHS.MODEL, 
+                                              do_lower_case=PARAMS.MODEL.DO_LOWER_CASE)
     def __init__(self, texts, tags):
         self.texts = texts
         self.tags = tags
