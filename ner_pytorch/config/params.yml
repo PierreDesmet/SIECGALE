@@ -1,8 +1,18 @@
-# todo
-paths:
+proxies: 
+    http: http://127.0.0.1:3128
+    https: http://127.0.0.1:3128
+
+language: fr  # en
+
+paths_en:
     train: data/inputs/ner_dataset.csv
     model: data/inputs/models/bert-base-uncased # from https://huggingface.co/bert-base-uncased/tree/main
-    model_saved: data/models/model_trained.bin
+    model_saved: data/models/model_trained_en.bin
+
+paths_fr:
+    train: data/inputs/base_finale_harmonisée.feather
+    model: ../models/camembert-base
+    model_saved: data/models/model_trained_fr.bin
 
 seed: 7
 num_labels: 3
@@ -24,4 +34,4 @@ model:
     max_sentence_len: 128
     train_batch_size: 32
     valid_batch_size: 32
-    epochs: 4
+    epochs: 2

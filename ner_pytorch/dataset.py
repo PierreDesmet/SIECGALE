@@ -1,25 +1,41 @@
 import ast
 import torch
-from transformers import BertTokenizer
+from transformers import BertTokenizer, CamembertTokenizer
 
 from ner_pytorch.config.params import PARAMS
 
 
 class EntityDataset(torch.utils.data.Dataset):
-    tokenizer = BertTokenizer.from_pretrained(PARAMS.PATHS.MODEL, 
-                                              do_lower_case=PARAMS.MODEL.DO_LOWER_CASE)
+    if PARAMS.LANGUAGE == 'en':
+        tokenizer = BertTokenizer.from_pretrained(
+            PARAMS.PATHS_EN.MODEL, 
+            do_lower_case=PARAMS.MODEL.DO_LOWER_CASE
+        )
+    elif PARAMS.LANGUAGE == 'fr':
+        tokenizer = CamembertTokenizer.from_pretrained(
+            PARAMS.PATHS_FR.MODEL  #, proxies=PARAMS.PROXIES
+        ) 
+        
     def __init__(self, texts, tags):
         self.texts = texts
         self.tags = tags
         self.PADDING_VALUE = 0
+        
+        func = self.tokenizer.encode
+        self.special_token_start, *_, self.special_token_end = func("Test", 
+                                                                   add_special_tokens=True)
 
+    def getitem_enrichi(self, item: int):
+        print(self.texts[item])
+        return self.__getitem__(item)
+    
     def __len__(self):
         return len(self.texts)
 
     def __getitem__(self, item: int):
         text = self.texts[item]
         tags = self.tags[item]
-
+        
         ids = []
         target_tag = []
 
@@ -35,7 +51,7 @@ class EntityDataset(torch.utils.data.Dataset):
         ids = ids[:PARAMS.MODEL.MAX_SENTENCE_LEN - 2]
         target_tag = target_tag[:PARAMS.MODEL.MAX_SENTENCE_LEN - 2]
 
-        ids = [101] + ids + [102]
+        ids = [self.special_token_start] + ids + [self.special_token_end]
         target_tag = [self.PADDING_VALUE] + target_tag + [self.PADDING_VALUE]
 
         mask = [1] * len(ids)
