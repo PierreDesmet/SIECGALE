@@ -19,11 +19,11 @@ class EntityDataset(torch.utils.data.Dataset):
     def __init__(self, texts, tags):
         self.texts = texts
         self.tags = tags
-        self.PADDING_VALUE = 0
         
         func = self.tokenizer.encode
         self.special_token_start, *_, self.special_token_end = func("Test", 
                                                                    add_special_tokens=True)
+        self.PADDING_VALUE = self.tokenizer.pad_token_id
 
     def getitem_enrichi(self, item: int):
         print(self.texts[item])
