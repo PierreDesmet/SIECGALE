@@ -1,2 +1,0 @@
-# Fonctions
-::: ner_pytorch
