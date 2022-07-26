@@ -18,7 +18,7 @@ def train_fn(data_loader, model, optimizer, device, scheduler,
                 batch[k] = v.to(device)
         
         optimizer.zero_grad()
-        batch_pred, loss = model(**batch)
+        loss, batch_pred = model(**batch)
         
         if num_batch % 10 == 0:
             with torch.no_grad():
@@ -49,7 +49,7 @@ def eval_fn(data_loader, model, device):
                 for k, v in batch.items():
                     batch[k] = v.to(device)
 
-            _, loss = model(**batch)
+            loss, _ = model(**batch)
             final_loss += loss.item()
 
     return final_loss / len(data_loader)
