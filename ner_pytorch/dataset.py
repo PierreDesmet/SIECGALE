@@ -32,41 +32,44 @@ class EntityDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.texts)
 
-    def __getitem__(self, item: int):
-        text = self.texts[item]
-        tags = self.tags[item]
+    def __getitem__(self, position: int):
+        liste_mots: list = self.texts[position]
+        tags = self.tags[position]
+        assert len(tags) == len(liste_mots)
         
-        ids = []
-        target_tag = []
+        max_length = PARAMS.MODEL.MAX_SENTENCE_LEN
 
-        for i, s in enumerate(text):
-            inputs = EntityDataset.tokenizer.encode(
-                s,
-                add_special_tokens=False
+        tous_les_ids = []
+        tous_les_tags = []
+        tous_les_masques = []
+        for i, mot_entier in enumerate(liste_mots):
+            mot_entier_encodé = self.tokenizer.encode_plus(
+                mot_entier, padding='do_not_pad',
+                max_length=None, truncation=False, add_special_tokens=False
             )
-            input_len = len(inputs)
-            ids.extend(inputs)
-            target_tag.extend([tags[i]] * input_len)
-
-        ids = ids[:PARAMS.MODEL.MAX_SENTENCE_LEN - 2]
-        target_tag = target_tag[:PARAMS.MODEL.MAX_SENTENCE_LEN - 2]
-
-        ids = [self.special_token_start] + ids + [self.special_token_end]
-        target_tag = [self.PADDING_VALUE] + target_tag + [self.PADDING_VALUE]
-
-        mask = [1] * len(ids)
-        token_type_ids = [self.PADDING_VALUE] * len(ids)
-
-        padding_len = PARAMS.MODEL.MAX_SENTENCE_LEN - len(ids)
-
-        ids = ids + ([self.PADDING_VALUE] * padding_len)
-        mask = mask + ([self.PADDING_VALUE] * padding_len)
-        token_type_ids = token_type_ids + ([self.PADDING_VALUE] * padding_len)
-        target_tag = target_tag + ([self.PADDING_VALUE] * padding_len)
+            
+            tous_les_ids.extend(mot_entier_encodé['input_ids'])
+            tous_les_tags.extend([tags[i]] * len(mot_entier_encodé['input_ids']))
+            tous_les_masques.extend(mot_entier_encodé['attention_mask'])
+        
+        # Troncation (si nécessaire) :
+        tous_les_ids = tous_les_ids[:max_length - 2]
+        tous_les_tags = tous_les_tags[:max_length - 2]
+        tous_les_masques = tous_les_masques[:max_length - 2]
+        
+        # Ajout des tokens de début et de fin :
+        tous_les_ids = [self.special_token_start] + tous_les_ids + [self.special_token_end]
+        tous_les_tags = [0] + tous_les_tags + [0]
+        tous_les_masques = [1] + tous_les_masques + [1]
+        
+        # Ajout du padding :
+        tous_les_ids = tous_les_ids + [self.PADDING_VALUE] * (max_length - len(tous_les_ids))
+        tous_les_tags = tous_les_tags + [0] * (max_length - len(tous_les_tags))
+        tous_les_masques = tous_les_masques + [0] * (max_length - len(tous_les_masques))
 
         return {
-            "ids": torch.tensor(ids, dtype=torch.long),
-            "mask": torch.tensor(mask, dtype=torch.long),
-            "token_type_ids": torch.tensor(token_type_ids, dtype=torch.long),
-            "target_tag": torch.tensor(target_tag, dtype=torch.long),
+            "input_ids": torch.tensor(tous_les_ids, dtype=torch.int64),
+            "attention_mask": torch.tensor(tous_les_masques, dtype=torch.int64),
+            "token_type_ids": torch.zeros(max_length, dtype=torch.int64),
+            "labels": torch.tensor(tous_les_tags, dtype=torch.int64)
         }

@@ -22,8 +22,8 @@ def train_fn(data_loader, model, optimizer, device, scheduler,
         
         if num_batch % 10 == 0:
             with torch.no_grad():
-                batch_loss = loss_fn(batch_pred, batch['target_tag'],
-                                     batch['mask'], num_labels=PARAMS.NUM_LABELS)
+                batch_loss = loss_fn(batch_pred, batch['labels'],
+                                     batch['attention_mask'], num_labels=PARAMS.NUM_LABELS)
                 print(f'Batch #{num_batch} : loss = {batch_loss:.6f}')
         
         loss.backward()
@@ -70,30 +70,32 @@ def prédit_single_doc(doc: str, model, tokenizer, max_length: int, label_enc):
     )
 
     single_example = {
-        'ids': torch.tensor(tokens_encodés['input_ids'], dtype=torch.int64).unsqueeze(0),
-        'mask': torch.tensor(tokens_encodés['attention_mask'], dtype=torch.int64).unsqueeze(0),
+        'input_ids': torch.tensor(tokens_encodés['input_ids'], dtype=torch.int64).unsqueeze(0),
+        'attention_mask': torch.tensor(tokens_encodés['attention_mask'], dtype=torch.int64).unsqueeze(0),
         'token_type_ids': torch.zeros(max_length, dtype=torch.int64).unsqueeze(0),
-        'target_tag': torch.zeros(max_length, dtype=torch.int64).unsqueeze(0)
+        'labels': torch.zeros(max_length, dtype=torch.int64).unsqueeze(0)
     }
     with torch.no_grad():
         _ = model.eval()
-        output, loss = model(**single_example)
+        loss, output = model(**single_example)
 
     # Retrait des tokens qui ne contribuent pas à la loss (CLS, SEP, PAD) :
-    output = output.squeeze()[single_example['mask'][0] == 1]
+    output = output.squeeze()[single_example['attention_mask'][0] == 1]
 
     predictions_probas = nn.functional.softmax(output, dim=1).detach().squeeze()
     predictions_probas, predictions_classes = torch.max(predictions_probas, dim=1)
 
-    nb_tokens = single_example['mask'].sum().item()
-    ids = single_example['ids'].squeeze()[:nb_tokens]
+    nb_tokens = single_example['attention_mask'].sum().item()
+    ids = single_example['input_ids'].squeeze()[:nb_tokens]
 
     résultat = pd.DataFrame({
         'token_text': [tokenizer.decode([token]) for token in ids],
         'token_id': ids,
         'pred_code': predictions_classes,
         'pred_label': label_enc.inverse_transform(predictions_classes.reshape(-1, 1)).squeeze(),
-        'y_true': label_enc.inverse_transform(single_example['target_tag'].squeeze()[:nb_tokens].reshape(-1, 1)).squeeze(),
         'class_proba': predictions_probas
     })
+    # 'y_true': label_enc.inverse_transform(
+    #    single_example['target_tag'].squeeze()[:nb_tokens].reshape(-1, 1)
+    #).squeeze(),
     return résultat.set_index('token_text')

@@ -31,7 +31,7 @@ model:
     do_lower_case: True  # autrement, trop de tokens seraient inconnus
     grad_max_norm: 1
     learning_rate: 0.00003
-    max_sentence_len: 128
+    max_sentence_len: 256
     train_batch_size: 32
     valid_batch_size: 32
     epochs: 2

@@ -47,15 +47,14 @@ class EntityModel(nn.Module):
         # self.out_tag = nn.Linear(768, self.num_tag)
         
     
-    def forward(self, ids, mask, token_type_ids, target_tag):
+    def forward(self, input_ids, attention_mask, token_type_ids, labels):
         kwargs = {
-            'input_ids': ids,
-            'attention_mask': mask,
+            'input_ids': input_ids,
+            'attention_mask': attention_mask,
             'token_type_ids': token_type_ids, 
-            'labels': target_tag
+            'labels': labels
         }
         loss, o1 = self.bert(**kwargs)
         bo_tag = self.dropout(o1)
-        loss = loss_fn(bo_tag, target_tag, mask, self.num_tag)
-        import pdb ; pdb.set_trace()
+        loss = loss_fn(bo_tag, labels, attention_mask, self.num_tag)
         return loss, bo_tag
